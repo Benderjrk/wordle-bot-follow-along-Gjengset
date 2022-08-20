@@ -1,0 +1,23 @@
+rg -Iz "^[a-zA-Z]{5}_[A-Z]+\t" 1-*-of-00024.gz > 5-letters.txt
+
+zcat 1-00012-of-00024.gz | grep -v NUM | head
+
+awk -F '\t' '{print $1"\t"$NF}' 5-letters.txt | sed 's/_/,/' | awk -F, '{print $1" "$(NF-1)}' > 5-letters-occur.txt
+
+turn all capitals to lowercase and sort
+tr A-Z a-z < 5-letters-occur.txt | sort > 5-letters-lc-sorted.txt
+
+awk program to combine same values and add them up
+awk 'BEGIN {w="";v=0} {if (!w) w=$1; else if ($1==w) v=v+$2; else { print w" "v; w=$1; v=$2; } } END {print w" "v}' < 5-letters-lc-sorted.txt > 5-letters-lc-sorted-combined.txt
+
+Top used words in dataset
+sort -rnk2,2 5-letters-lc-sorted-combined.txt | head
+
+Didn't work to get full word count
+awk '{print $2}' 5-letters-lc-sorted-combined.txt | paste -sd+ | bc
+
+jq -r '.[]' dictionary.json | sort > dictionary.txt
+
+join -a 1 dictionary.txt 5-letters-lc-sorted-combined.txt
+
+join -a 1 dictionary.txt 5-letters-lc-sorted-combined.txt
