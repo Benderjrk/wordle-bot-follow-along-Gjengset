@@ -1,8 +1,10 @@
 const GAMES: &str = include_str!("../answers.txt");
 
 fn main() {
-    
-    println!("Hello, world!");
+    let guesser = Naive::new();
+    for answer in GAMES.split_whitespace() {
+        play(answer, guesser)
+    }
 }
 
 fn play<G: Guesser>(answer: &'static str, guesser: G) {
