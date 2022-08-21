@@ -85,10 +85,26 @@ mod test {
         use crate::Correctness;
 
         #[test]
-        fn basic() {
+        fn all_green() {
             assert_eq!(
                 Correctness::compute("abcde", "abcde"),
                 [Correctness::Correct; 5]
+            );
+        }
+
+        #[test]
+        fn all_gray() {
+            assert_eq!(
+                Correctness::compute("abcde", "lmnop"),
+                [Correctness::Wrong; 5]
+            );
+        }
+
+        #[test]
+        fn all_yellow() {
+            assert_eq!(
+                Correctness::compute("abcde", "bcdea"),
+                [Correctness::Misplaced; 5]
             );
         }
     }
