@@ -66,8 +66,7 @@ impl Correctness {
                 c[i] = Correctness::Misplaced;
             }
         }
-
-        todo!()
+        c
     }
 }
 
@@ -78,4 +77,19 @@ pub struct Guess {
 
 pub trait Guesser {
     fn guess(&mut self, history: &[Guess]) -> String;
+}
+
+#[cfg(test)]
+mod test {
+    mod compute {
+        use crate::Correctness;
+
+        #[test]
+        fn basic() {
+            assert_eq!(
+                Correctness::compute("abcde", "abcde"),
+                [Correctness::Correct; 5]
+            );
+        }
+    }
 }
