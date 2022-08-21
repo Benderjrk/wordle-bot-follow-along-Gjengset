@@ -84,28 +84,64 @@ mod test {
     mod compute {
         use crate::Correctness;
 
+        macro_rules! mask {
+            (C) => {Correctness::Correct};
+            (M) => {Correctness::Misplaced};
+            (W) => {Correctness::Wrong};
+            ($($c:tt)+) => {[
+                $(mask!($c)),+
+            ]};
+        }
+
         #[test]
         fn all_green() {
-            assert_eq!(
-                Correctness::compute("abcde", "abcde"),
-                [Correctness::Correct; 5]
-            );
+            assert_eq!(Correctness::compute("abcde", "abcde"),mask![C C C C C]);
         }
 
         #[test]
         fn all_gray() {
-            assert_eq!(
-                Correctness::compute("abcde", "lmnop"),
-                [Correctness::Wrong; 5]
-            );
+            assert_eq!(Correctness::compute("abcde", "lmnop"),mask![W W W W W]);
         }
 
         #[test]
         fn all_yellow() {
-            assert_eq!(
-                Correctness::compute("abcde", "bcdea"),
-                [Correctness::Misplaced; 5]
-            );
+            assert_eq!(Correctness::compute("abcde", "bcdea"),mask![M M M M M]);
         }
+
+        #[test]
+        fn repeat_green() {
+            assert_eq!(Correctness::compute("aabbb", "aaccc"),mask![C C W W W]);
+        }
+
+        #[test]
+        fn repeat_yellow() {
+            assert_eq!(Correctness::compute("aabbb", "ccaac"),mask![W W M M W]);
+        }
+
+        #[test]
+        fn four_misplaced_one_correct() {
+            assert_eq!(Correctness::compute("aabbb", "bbbaa"),mask![M M C M M]);
+        }
+
+        #[test]
+        fn four_wrong_one_correct() {
+            assert_eq!(Correctness::compute("abcde", "fghie"),mask![W W W W C]);
+        }
+
+        #[test]
+        fn three_a_one_correct_one_misplaced_one_wrong() {
+            assert_eq!(Correctness::compute("azzaz", "aaabb"),mask![C M W W W]);
+        }
+
+        #[test]
+        fn four_wrong_one_correct_secondcase() {
+            assert_eq!(Correctness::compute("baccc", "aaddd"),mask![W C W W W]);
+        }
+
+        #[test]
+        fn double_a_but_only_one_a_not_two() {
+            assert_eq!(Correctness::compute("abcde", "aacde"),mask![C W C C C]);
+        }
+
     }
 }
